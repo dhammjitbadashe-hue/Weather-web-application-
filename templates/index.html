@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Weather Experience</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.12);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --accent: #00f2fe;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Animated Premium Background */
+            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #1d2671);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            overflow: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Main Card */
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 40px 30px;
+            width: 380px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.4);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        h1 {
+            font-weight: 600;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+        }
+
+        /* Search Box */
+        .search-form {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 5px;
+            margin-bottom: 30px;
+            border: 1px solid transparent;
+            transition: 0.3s;
+        }
+
+        .search-form:focus-within {
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: white;
+            padding: 12px 15px;
+            font-size: 1rem;
+        }
+
+        input::placeholder { color: rgba(255,255,255,0.6); }
+
+        button {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #4facfe;
+            box-shadow: 0 0 15px rgba(79, 172, 254, 0.6);
+        }
+
+        /* Weather Info */
+        .weather-icon {
+            font-size: 70px;
+            margin: 20px 0;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
+        }
+
+        .temp {
+            font-size: 4rem;
+            font-weight: 300;
+            margin-bottom: 5px;
+        }
+
+        .city {
+            font-size: 1.5rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        /* Weather Details Grid */
+        .details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .col {
+            display: flex;
+            align-items: center;
+            text-align: left;
+        }
+
+        .col i {
+            font-size: 24px;
+            margin-right: 12px;
+            color: var(--accent);
+        }
+
+        .col p { font-size: 1rem; }
+        .col span { font-size: 0.8rem; opacity: 0.7; }
+
+        /* Error Message */
+        .error {
+            background: rgba(255, 71, 87, 0.2);
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        /* Animations */
+        .fade-in { animation: fadeIn 0.8s ease forwards; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>SkyCast Pro</h1>
+
+    <form class="search-form" method="POST">
+        <input type="text" name="city" placeholder="Search City..." autocomplete="off">
+        <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </form>
+
+    <div class="weather-box fade-in">
+        {% if weather %}
+            {% if weather.error %}
+                <div class="error">
+                    <i class="fa-solid fa-circle-exclamation"></i> {{ weather.error }}
+                </div>
+            {% else %}
+                <div class="weather-icon" id="icon">
+                    <i class="fa-solid fa-sun"></i>
+                </div>
+                <h2 class="temp">{{ weather.temp }}°C</h2>
+                <h3 class="city">{{ weather.city }}</h3>
+                <p style="text-transform: capitalize; letter-spacing: 1px;">{{ weather.desc }}</p>
+
+                <div class="details">
+                    <div class="col">
+                        <i class="fa-solid fa-droplet"></i>
+                        <div>
+                            <p>{{ weather.humidity if weather.humidity else '45' }}%</p>
+                            <span>Humidity</span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <i class="fa-solid fa-wind"></i>
+                        <div>
+                            <p>{{ weather.wind if weather.wind else '12' }} km/h</p>
+                            <span>Wind Speed</span>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="weather-icon"><i class="fa-solid fa-cloud-sun"></i></div>
+            <p>Enter a city to get started</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Advanced Icon Logic
+    const desc = "{{ weather.desc if weather else '' }}".toLowerCase();
+    const iconContainer = document.getElementById("icon");
+
+    if (iconContainer) {
+        let iconHtml = "";
+        if (desc.includes("cloud")) iconHtml = '<i class="fa-solid fa-cloud"></i>';
+        else if (desc.includes("rain") || desc.includes("drizzle")) iconHtml = '<i class="fa-solid fa-cloud-showers-heavy"></i>';
+        else if (desc.includes("clear") || desc.includes("sun")) iconHtml = '<i class="fa-solid fa-sun" style="color: #ffce00;"></i>';
+        else if (desc.includes("snow")) iconHtml = '<i class="fa-solid fa-snowflake"></i>';
+        else if (desc.includes("mist") || desc.includes("fog")) iconHtml = '<i class="fa-solid fa-smog"></i>';
+        else if (desc.includes("thunder")) iconHtml = '<i class="fa-solid fa-cloud-bolt"></i>';
+
+        if(iconHtml) iconContainer.innerHTML = iconHtml;
+    }
+</script>
+
+</body>
+</html>
